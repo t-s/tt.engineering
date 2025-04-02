@@ -85,7 +85,7 @@ const { title } = Astro.props;
 				setTimeout(resizeCanvas, 1000); // Final check for any dynamic content
 				
 				// Node properties - adjust based on screen size
-				const isMobile = window.innerWidth < 768;
+				let isMobile = window.innerWidth < 768;
 				const particleCount = isMobile ? 80 : 150; // More particles on mobile for better visibility
 				const connectionDistance = isMobile ? 180 : 250; // Longer connections on mobile for more visibility
 				const particles = [];
@@ -146,19 +146,17 @@ const { title } = Astro.props;
 				function drawParticles() {
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					
-					// Focus on visible area for connections
-					const visibleTop = window.pageYOffset;
-					const visibleBottom = visibleTop + window.innerHeight;
+					// We'll use the scroll position to track where we are in the document,
+					// but will render nodes regardless of visibility for persistence
+					const scrollTop = window.pageYOffset;
+					const viewportBottom = scrollTop + window.innerHeight;
 					
 					// Draw connections first
 					for (let i = 0; i < particles.length; i++) {
 						const p = particles[i];
 						
-						// Skip connections for particles very far outside the visible area on mobile
-						// to improve performance, but allow a larger range than before
-						if (isMobile && (p.y < visibleTop - 500 || p.y > visibleBottom + 500)) {
-							continue;
-						}
+						// For mobile, don't skip any particles - show everything for persistence
+						// No culling here to ensure particles stay visible even when scrolling
 						
 						// Limit the number of connection checks on mobile, but increase from previous
 						const checkLimit = isMobile ? Math.min(50, particles.length) : particles.length;
@@ -189,8 +187,9 @@ const { title } = Astro.props;
 					for (let i = 0; i < particles.length; i++) {
 						const p = particles[i];
 						
-						// For mobile, draw particles across a wider visible area
-						if (isMobile && (p.y < visibleTop - 600 || p.y > visibleBottom + 600)) {
+						// For mobile, we don't skip any particles regardless of position
+						// This ensures all nodes remain visible when scrolling
+						if (!isMobile && (p.y < scrollTop - 600 || p.y > viewportBottom + 600)) {
 							continue;
 						}
 						
