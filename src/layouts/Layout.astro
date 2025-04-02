@@ -21,6 +21,8 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<canvas id="network-background"></canvas>
+		
 		<header>
 			<nav>
 				<div class="logo">
@@ -46,11 +48,136 @@ const { title } = Astro.props;
 						<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="social-icon"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
 					</a>
 					<a href="https://linkedin.com/in/timsidie" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-						<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="social-icon"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+						<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="social-icon"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2a2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
 					</a>
 				</div>
 			</div>
 		</footer>
+		<script>
+			// Network Animation
+			document.addEventListener('DOMContentLoaded', function() {
+				const canvas = document.getElementById('network-background');
+				const ctx = canvas.getContext('2d');
+				
+				// Set canvas dimensions to match document height exactly
+				function resizeCanvas() {
+					canvas.width = window.innerWidth;
+					canvas.height = document.body.scrollHeight;
+				}
+				
+				// Call once to initialize
+				resizeCanvas();
+				
+				// Resize canvas when window size changes or content updates
+				window.addEventListener('resize', resizeCanvas);
+				// Also update canvas height when DOM content changes
+				setTimeout(resizeCanvas, 100); // Check again after page has started loading
+				setTimeout(resizeCanvas, 500); // Check again after page has fully loaded
+				setTimeout(resizeCanvas, 1000); // Final check for any dynamic content
+				
+				// Node properties
+				const particleCount = 150; // More particles
+				const connectionDistance = 250; // Longer connections
+				const particles = [];
+				
+				// Create particles that distribute across the entire page height
+				function createParticles() {
+					const particlesPerSection = Math.ceil(particleCount / 3);
+					
+					// Create particles for top, middle, and bottom sections to ensure good distribution
+					for (let section = 0; section < 3; section++) {
+						const sectionStartY = section * (canvas.height / 3);
+						const sectionEndY = (section + 1) * (canvas.height / 3);
+						
+						for (let i = 0; i < particlesPerSection; i++) {
+							particles.push({
+								x: Math.random() * canvas.width,
+								y: sectionStartY + Math.random() * (sectionEndY - sectionStartY),
+								size: Math.random() * 3 + 2.5, // Larger particles
+								speedX: Math.random() * 0.3 - 0.15,
+								speedY: Math.random() * 0.3 - 0.15,
+								color: '#000000'
+							});
+						}
+					}
+				}
+				
+				// Draw particles and connections
+				function drawParticles() {
+					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					
+					// Draw connections first
+					for (let i = 0; i < particles.length; i++) {
+						const p = particles[i];
+						
+						// Check for connections
+						for (let j = i + 1; j < particles.length; j++) {
+							const p2 = particles[j];
+							const distance = Math.sqrt(
+								Math.pow(p.x - p2.x, 2) + 
+								Math.pow(p.y - p2.y, 2)
+							);
+							
+							if (distance < connectionDistance) {
+								// Draw connection with opacity based on distance
+								ctx.beginPath();
+								ctx.moveTo(p.x, p.y);
+								ctx.lineTo(p2.x, p2.y);
+								const opacity = 1 - (distance / connectionDistance);
+								ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.9})`; // More visible
+								ctx.lineWidth = 1.5; // Thicker lines
+								ctx.stroke();
+							}
+						}
+					}
+					
+					// Then draw the particles over the connections
+					for (let i = 0; i < particles.length; i++) {
+						const p = particles[i];
+						ctx.beginPath();
+						ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+						ctx.fillStyle = p.color;
+						ctx.fill();
+					}
+				}
+				
+				// Update particle positions
+				function updateParticles() {
+					for (let i = 0; i < particles.length; i++) {
+						const p = particles[i];
+						
+						// Move the particle (independent of scroll position)
+						p.x += p.speedX;
+						p.y += p.speedY;
+						
+						// Bounce off viewport edges
+						if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+						if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+					}
+				}
+				
+				// Animation loop
+				function animate() {
+					requestAnimationFrame(animate);
+					drawParticles();
+					updateParticles();
+					
+					// Check if we need to resize canvas due to content changes
+					if (canvas.height !== document.body.scrollHeight) {
+						resizeCanvas();
+						// Redistribute particles if canvas was resized
+						if (particles.length > 0) {
+							particles.length = 0;
+							createParticles();
+						}
+					}
+				}
+				
+				// Initialize and start animation
+				createParticles();
+				animate();
+			});
+		</script>
 	</body>
 </html>
 
@@ -83,6 +210,19 @@ body {
     background-color: var(--background);
     line-height: 1.4;
     padding-top: 95px; /* Adjusted for desktop */
+    position: relative;
+    overflow-x: hidden;
+}
+
+#network-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Match exactly the document height */
+    z-index: -1;
+    opacity: 0.7;
+    pointer-events: none;
 }
 
 a {
@@ -217,6 +357,7 @@ footer {
     text-align: center;
     padding: 2rem;
     margin-top: 2rem;
+    margin-bottom: 0;
     border-top: 4px solid black;
 }
 
