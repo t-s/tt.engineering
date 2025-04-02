@@ -33,7 +33,43 @@ import HeroSection from '../components/HeroSection.astro';
 			<div class="tile about-content" id="tile-4">
 				<p>Timothy Technologies is a software consulting agency focused on delivering high-quality software solutions. We partner with businesses to solve complex problems with elegant code.</p>
 				<p>With leadership experience ranging from NASA projects to co-founding NASDAQ-listed public entities, we lead teams by example and through expert communication.</p>
-				<p>Based in the Glover Park neighborhood of Washington, DC, we bring both technical expertise and a collaborative approach to every project.</p>
+				<p>Based in the Georgetown neighborhood of Washington, DC, we bring both technical expertise and a collaborative approach to every project.</p>
+				
+				<div class="proficiencies">
+					<h4>Technical Proficiencies</h4>
+					<div class="proficiency-categories">
+						<div class="proficiency-category">
+							<h5>Languages</h5>
+							<ul>
+								<li>Python</li>
+								<li>JavaScript/TypeScript</li>
+								<li>Java</li>
+								<li>C/C++</li>
+								<li>SQL</li>
+							</ul>
+						</div>
+						<div class="proficiency-category">
+							<h5>Frameworks</h5>
+							<ul>
+								<li>Django</li>
+								<li>React</li>
+								<li>React Native</li>
+								<li>Node.js</li>
+								<li>Express</li>
+							</ul>
+						</div>
+						<div class="proficiency-category">
+							<h5>Data & Cloud</h5>
+							<ul>
+								<li>PostgreSQL</li>
+								<li>MongoDB</li>
+								<li>AWS</li>
+								<li>Azure</li>
+								<li>Docker/Kubernetes</li>
+							</ul>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="map-container">
 				<div id="map"></div>
@@ -125,6 +161,45 @@ import HeroSection from '../components/HeroSection.astro';
 	border-radius: 3px;
 }
 
+/* Proficiencies Section */
+.proficiencies {
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 3px dashed rgba(255, 255, 255, 0.3);
+}
+
+.proficiencies h4 {
+	font-size: 1.4rem;
+	font-weight: 700;
+	margin-bottom: 1.2rem;
+	text-transform: uppercase;
+}
+
+.proficiency-categories {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 1.5rem;
+}
+
+.proficiency-category h5 {
+	font-size: 1.1rem;
+	font-weight: 600;
+	margin-bottom: 0.8rem;
+	text-transform: uppercase;
+	border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+	padding-bottom: 0.3rem;
+}
+
+.proficiency-category ul {
+	list-style: none;
+	padding: 0;
+}
+
+.proficiency-category li {
+	padding: 0.3rem 0;
+	font-size: 0.95rem;
+}
+
 @media (max-width: 768px) {
 	.main-container {
 		padding: 0 1rem;
@@ -136,6 +211,21 @@ import HeroSection from '../components/HeroSection.astro';
 
 	.map-container {
 		min-height: 200px;
+	}
+	
+	.proficiency-categories {
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+	
+	.proficiency-category {
+		margin-bottom: 1rem;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+	.proficiency-categories {
+		grid-template-columns: repeat(2, 1fr);
 	}
 }
 </style>
