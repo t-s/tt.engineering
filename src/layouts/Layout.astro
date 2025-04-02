@@ -69,36 +69,50 @@ const { title } = Astro.props;
 				resizeCanvas();
 				
 				// Resize canvas when window size changes or content updates
-				window.addEventListener('resize', resizeCanvas);
+				window.addEventListener('resize', function() {
+					// Clear existing particles
+					particles.length = 0;
+					// Update mobile detection
+					const wasMobile = isMobile;
+					isMobile = window.innerWidth < 768;
+					// Only recreate particles if screen size category changed (mobile/desktop)
+					resizeCanvas();
+					createParticles();
+				});
 				// Also update canvas height when DOM content changes
 				setTimeout(resizeCanvas, 100); // Check again after page has started loading
 				setTimeout(resizeCanvas, 500); // Check again after page has fully loaded
 				setTimeout(resizeCanvas, 1000); // Final check for any dynamic content
 				
-				// Node properties
-				const particleCount = 150; // More particles
-				const connectionDistance = 250; // Longer connections
+				// Node properties - adjust based on screen size
+				const isMobile = window.innerWidth < 768;
+				const particleCount = isMobile ? 60 : 150; // Fewer particles on mobile
+				const connectionDistance = isMobile ? 150 : 250; // Shorter connections on mobile
 				const particles = [];
 				
 				// Create particles that distribute across the entire page height
 				function createParticles() {
-					const particlesPerSection = Math.ceil(particleCount / 3);
+					// Calculate density based on screen size (for responsive particle distribution)
+					const screenArea = canvas.width * canvas.height;
+					const density = isMobile ? 250000 : 150000; // Higher number = fewer particles per area
+					const visibleSections = Math.max(1, Math.ceil(canvas.height / window.innerHeight));
 					
-					// Create particles for top, middle, and bottom sections to ensure good distribution
-					for (let section = 0; section < 3; section++) {
-						const sectionStartY = section * (canvas.height / 3);
-						const sectionEndY = (section + 1) * (canvas.height / 3);
+					// Distribute particles across the visible document
+					// with higher concentration in the visible area
+					for (let i = 0; i < particleCount; i++) {
+						// Choose random section with bias toward visible area
+						const section = Math.floor(Math.random() * visibleSections);
+						const sectionStartY = section * window.innerHeight;
+						const sectionEndY = Math.min(canvas.height, (section + 1) * window.innerHeight);
 						
-						for (let i = 0; i < particlesPerSection; i++) {
-							particles.push({
-								x: Math.random() * canvas.width,
-								y: sectionStartY + Math.random() * (sectionEndY - sectionStartY),
-								size: Math.random() * 3 + 2.5, // Larger particles
-								speedX: Math.random() * 0.3 - 0.15,
-								speedY: Math.random() * 0.3 - 0.15,
-								color: '#000000'
-							});
-						}
+						particles.push({
+							x: Math.random() * canvas.width,
+							y: sectionStartY + Math.random() * (sectionEndY - sectionStartY),
+							size: isMobile ? Math.random() * 2.5 + 2 : Math.random() * 3 + 2.5, // Adjust size for mobile
+							speedX: Math.random() * 0.3 - 0.15,
+							speedY: Math.random() * 0.3 - 0.15,
+							color: '#000000'
+						});
 					}
 				}
 				
@@ -106,12 +120,25 @@ const { title } = Astro.props;
 				function drawParticles() {
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
 					
+					// Focus on visible area for connections
+					const visibleTop = window.pageYOffset;
+					const visibleBottom = visibleTop + window.innerHeight;
+					
 					// Draw connections first
 					for (let i = 0; i < particles.length; i++) {
 						const p = particles[i];
 						
+						// Skip connections for particles far outside the visible area on mobile
+						// to improve performance
+						if (isMobile && (p.y < visibleTop - 200 || p.y > visibleBottom + 200)) {
+							continue;
+						}
+						
+						// Limit the number of connection checks on mobile
+						const checkLimit = isMobile ? Math.min(30, particles.length) : particles.length;
+						
 						// Check for connections
-						for (let j = i + 1; j < particles.length; j++) {
+						for (let j = i + 1; j < checkLimit; j++) {
 							const p2 = particles[j];
 							const distance = Math.sqrt(
 								Math.pow(p.x - p2.x, 2) + 
@@ -124,8 +151,9 @@ const { title } = Astro.props;
 								ctx.moveTo(p.x, p.y);
 								ctx.lineTo(p2.x, p2.y);
 								const opacity = 1 - (distance / connectionDistance);
-								ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.9})`; // More visible
-								ctx.lineWidth = 1.5; // Thicker lines
+								const opacityMultiplier = isMobile ? 0.8 : 0.9; // Slightly less visible on mobile
+								ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * opacityMultiplier})`;
+								ctx.lineWidth = isMobile ? 1.2 : 1.5; // Thinner lines on mobile
 								ctx.stroke();
 							}
 						}
@@ -134,6 +162,12 @@ const { title } = Astro.props;
 					// Then draw the particles over the connections
 					for (let i = 0; i < particles.length; i++) {
 						const p = particles[i];
+						
+						// For mobile, only draw particles near visible area to improve performance
+						if (isMobile && (p.y < visibleTop - 300 || p.y > visibleBottom + 300)) {
+							continue;
+						}
+						
 						ctx.beginPath();
 						ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
 						ctx.fillStyle = p.color;
