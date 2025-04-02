@@ -78,6 +78,11 @@ const { title } = Astro.props;
 					// Only recreate particles if screen size category changed (mobile/desktop)
 					resizeCanvas();
 					createParticles();
+					
+					// Reset connections on mobile resize
+					if (isMobile) {
+						connections.length = 0;
+					}
 				});
 				// Also update canvas height when DOM content changes
 				setTimeout(resizeCanvas, 100); // Check again after page has started loading
@@ -89,6 +94,10 @@ const { title } = Astro.props;
 				const particleCount = isMobile ? 25 : 150; // Significantly fewer particles on mobile (50% reduction)
 				const connectionDistance = isMobile ? 300 : 250; // Much longer connections on mobile for more visibility
 				const particles = [];
+				// Store persistent connections for mobile to prevent flickering
+				const connections = [];
+				// Frame counter for throttling connection updates
+				let frameCount = 0;
 				
 				// Create particles that distribute across the entire page height
 				function createParticles() {
@@ -145,45 +154,99 @@ const { title } = Astro.props;
 				// Draw particles and connections
 				function drawParticles() {
 					ctx.clearRect(0, 0, canvas.width, canvas.height);
+					frameCount++; // Increment frame counter
 					
 					// We'll use the scroll position to track where we are in the document,
 					// but will render nodes regardless of visibility for persistence
 					const scrollTop = window.pageYOffset;
 					const viewportBottom = scrollTop + window.innerHeight;
 					
-					// Draw connections first
-					for (let i = 0; i < particles.length; i++) {
-						const p = particles[i];
+					if (isMobile) {
+						// MOBILE: Use persistent connections to prevent flickering
 						
-						// For mobile, don't skip any particles - show everything for persistence
-						// No culling here to ensure particles stay visible even when scrolling
+						// Only update connections every 60 frames to prevent flickering
+						// This means connection updates happen about once every 1 second
+						if (frameCount % 60 === 0 || connections.length === 0) {
+							// Clear old connections array but keep capacity
+							connections.length = 0;
+							
+							// Build new set of connections
+							for (let i = 0; i < particles.length; i++) {
+								const p1 = particles[i];
+								
+								for (let j = i + 1; j < particles.length; j++) {
+									const p2 = particles[j];
+									const distance = Math.sqrt(
+										Math.pow(p1.x - p2.x, 2) + 
+										Math.pow(p1.y - p2.y, 2)
+									);
+									
+									// Only create connections that are within range
+									// And apply one-time filter to reduce density (skip 25%)
+									if (distance < connectionDistance && Math.random() > 0.25) {
+										connections.push({
+											from: i,
+											to: j,
+											opacity: 1 - (distance / connectionDistance)
+										});
+									}
+								}
+							}
+						}
 						
-						// For mobile, check all particles to create more connections
-						const checkLimit = particles.length;
-						
-						// Check for connections
-						for (let j = i + 1; j < checkLimit; j++) {
-							const p2 = particles[j];
+						// Draw all persistent connections with current particle positions
+						for (let i = 0; i < connections.length; i++) {
+							const conn = connections[i];
+							const p1 = particles[conn.from];
+							const p2 = particles[conn.to];
+							
+							// Recalculate current distance to update opacity
 							const distance = Math.sqrt(
-								Math.pow(p.x - p2.x, 2) + 
-								Math.pow(p.y - p2.y, 2)
+								Math.pow(p1.x - p2.x, 2) + 
+								Math.pow(p1.y - p2.y, 2)
 							);
 							
-							if (distance < connectionDistance) {
-								// For mobile, randomly skip about 25% of connections to reduce density
-								if (isMobile && Math.random() < 0.25) {
-									continue;
-								}
-								
-								// Draw connection with opacity based on distance
-								ctx.beginPath();
-								ctx.moveTo(p.x, p.y);
-								ctx.lineTo(p2.x, p2.y);
+							// Only draw if still in range (prevent extremely long connections)
+							if (distance < connectionDistance * 1.5) {
+								// Draw connection with opacity based on current distance
 								const opacity = 1 - (distance / connectionDistance);
-								const opacityMultiplier = isMobile ? 1.0 : 0.9; // Higher visibility on mobile
-								ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * opacityMultiplier})`;
-								ctx.lineWidth = isMobile ? 2.0 : 1.5; // Thicker connections on mobile
+								
+								ctx.beginPath();
+								ctx.moveTo(p1.x, p1.y);
+								ctx.lineTo(p2.x, p2.y);
+								ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 1.0})`;
+								ctx.lineWidth = 2.0; // Thicker connections on mobile
 								ctx.stroke();
+							}
+						}
+					} else {
+						// DESKTOP: Draw connections dynamically
+						for (let i = 0; i < particles.length; i++) {
+							const p = particles[i];
+							
+							// Skip particles very far outside the visible area on desktop
+							if (p.y < scrollTop - 600 || p.y > viewportBottom + 600) {
+								continue;
+							}
+							
+							// Check for connections
+							for (let j = i + 1; j < particles.length; j++) {
+								const p2 = particles[j];
+								const distance = Math.sqrt(
+									Math.pow(p.x - p2.x, 2) + 
+									Math.pow(p.y - p2.y, 2)
+								);
+								
+								if (distance < connectionDistance) {
+									// Draw connection with opacity based on distance
+									ctx.beginPath();
+									ctx.moveTo(p.x, p.y);
+									ctx.lineTo(p2.x, p2.y);
+									const opacity = 1 - (distance / connectionDistance);
+									ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.9})`;
+									ctx.lineWidth = 1.5;
+									ctx.stroke();
+								}
 							}
 						}
 					}
@@ -193,7 +256,7 @@ const { title } = Astro.props;
 						const p = particles[i];
 						
 						// For mobile, we don't skip any particles regardless of position
-						// This ensures all nodes remain visible when scrolling
+						// For desktop, skip particles far from viewport
 						if (!isMobile && (p.y < scrollTop - 600 || p.y > viewportBottom + 600)) {
 							continue;
 						}
@@ -233,6 +296,11 @@ const { title } = Astro.props;
 						if (particles.length > 0) {
 							particles.length = 0;
 							createParticles();
+							
+							// Reset connections on resize
+							if (isMobile) {
+								connections.length = 0;
+							}
 						}
 					}
 				}
