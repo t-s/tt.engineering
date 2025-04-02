@@ -19,6 +19,9 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/png" href="/tt.png" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<!-- Mapbox -->
+		<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+		<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
 	</head>
 	<body>
 		<canvas id="network-background"></canvas>
@@ -307,6 +310,59 @@ const { title } = Astro.props;
 				// Initialize and start animation
 				createParticles();
 				animate();
+			});
+
+			// Initialize Mapbox Map (Glover Park, DC)
+			document.addEventListener('DOMContentLoaded', function() {
+				const mapElement = document.getElementById('map');
+				
+				if (mapElement) {
+					// Mapbox API key
+					mapboxgl.accessToken = 'pk.eyJ1IjoidHNpZGllIiwiYSI6ImNtOHpvd2o2dzBlMmcya29obnhuanh3MG4ifQ.pXw_5J7FDpgb_0Z2A4x_vw';
+					
+					const map = new mapboxgl.Map({
+						container: 'map',
+						style: 'mapbox://styles/mapbox/dark-v11', // Dark style as requested
+						center: [-77.0741, 38.9200], // Glover Park, DC coordinates
+						zoom: 14.5,
+						attributionControl: true,
+						interactive: true
+					});
+					
+					// Add navigation controls
+					map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+					
+					// Wait for map to load before adding marker
+					map.on('load', function() {
+						// Add a marker for the location
+						new mapboxgl.Marker({
+							color: "#FF5B79" // Using the pink from the theme
+						})
+						.setLngLat([-77.0741, 38.9200])
+						.addTo(map);
+					});
+					
+					// Handle errors
+					map.on('error', function(e) {
+						console.error('Mapbox error: ', e.error);
+						// Fallback to display error message in map container
+						if (e.error && (e.error.status === 401 || e.error.status === 403)) {
+							mapElement.innerHTML = `
+								<div style="padding: 20px; text-align: center; color: white;">
+									<h3 style="margin-bottom: 10px;">Mapbox API Key Required</h3>
+									<p>To display the map, add your Mapbox API key in Layout.astro</p>
+									<p style="font-size: 12px; margin-top: 15px;">Sign up for free at <a href="https://account.mapbox.com/auth/signup/" style="color: #FF5B79;">mapbox.com</a></p>
+								</div>`;
+						}
+					});
+					
+					// Prevent scrolling on the map from triggering page scroll
+					mapElement.addEventListener('wheel', event => {
+						if (mapElement.contains(event.target)) {
+							event.preventDefault();
+						}
+					});
+				}
 			});
 		</script>
 	</body>
