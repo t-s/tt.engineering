@@ -1,47 +1,53 @@
-# Astro Starter Kit: Minimal
+# Timothy Technologies Landing Page
 
-```sh
-npm create astro@latest -- --template minimal
+A modern landing page for Timothy Technologies, a software consulting agency, built with Astro.
+
+## Features
+
+- Clean, modern design inspired by timothy.engineering
+- Built with Astro framework for optimized performance
+- Responsive layout
+- Brutalist design with bold colors and strong typography
+- Minimalist approach focusing on content
+- Sections for services, about, and contact
+
+## Tech Stack
+
+- [Astro](https://astro.build/) - The web framework for content-driven websites
+- [Inter Font](https://fonts.google.com/specimen/Inter) - A modern typeface designed for screen interfaces
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+## Structure
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+- `src/pages/index.astro` - Main landing page
+- `public/` - Static assets
 
-## 🚀 Project Structure
+## Customization
 
-Inside of your Astro project, you'll see the following folders and files:
+To customize this landing page:
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+1. Edit the content in `src/pages/index.astro`
+2. Modify the color scheme in the CSS variables
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Color Scheme
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+The color scheme uses a modern palette with bold colors:
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+- Primary: #5C62F9 (Vibrant blue-purple)
+- Secondary: #9747FF (Rich purple)
+- Accent: #FF8A3D (Orange accent)
+- Teal: #00C8B4
+- Pink: #FF5B79
+- Background: Clean white

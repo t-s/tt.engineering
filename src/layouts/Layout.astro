@@ -1,0 +1,214 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/900.css';
+
+interface Props {
+	title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+	</head>
+	<body>
+		<header>
+			<nav>
+				<div class="logo">Timothy Technologies</div>
+				<ul>
+					<li><a href="#services">Services</a></li>
+					<li><a href="#about">About</a></li>
+					<li><a href="#contact">Contact</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<slot />
+
+		<footer>
+			<p>&copy; 2025 Timothy Technologies. All rights reserved.</p>
+		</footer>
+	</body>
+</html>
+
+<style is:global>
+/* Bold Color Brutalism inspired by timothy.engineering */
+:root {
+    --tile1-bg: #5C62F9;      /* Vibrant blue-purple */
+    --tile2-bg: #9747FF;      /* Rich purple */
+    --tile3-bg: #FF8A3D;      /* Orange */
+    --tile4-bg: #00C8B4;      /* Teal */
+    --tile5-bg: #FF5B79;      /* Pink */
+    --header-bg: #151515;     /* Dark header */
+    --background: #FFFFFF;    /* Clean white */
+    --text-dark: #151515;     /* Dark text */
+    --text-light: #FFFFFF;    /* Light text */
+    --shadow: 8px 8px 0px rgba(0, 0, 0, 0.8); /* Bold shadow */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    color: var(--text-dark);
+    background-color: var(--background);
+    line-height: 1.4;
+    padding-top: 80px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+}
+
+/* Brutalist Header */
+header {
+    background-color: var(--header-bg);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+}
+
+nav li {
+    margin-left: 2rem;
+}
+
+nav a {
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    padding: 0.25rem 0;
+}
+
+nav a:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background-color: white;
+    transition: width 0.3s ease;
+}
+
+nav a:hover:after {
+    width: 100%;
+}
+
+/* Typography */
+h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+h2, h3 {
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: 2.4rem;
+    margin-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    background-color: black;
+    color: white;
+    padding: 0.75rem 2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 3px solid black;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Footer */
+footer {
+    background-color: var(--header-bg);
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 2rem;
+    border-top: 4px solid black;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    nav ul {
+        margin-top: 1rem;
+    }
+    
+    nav li {
+        margin: 0 1rem;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+}
+</style>

@@ -1,0 +1,59 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  description: string;
+}
+
+const { id, title, description } = Astro.props;
+---
+
+<div class="tile" id={id}>
+  <h3>{title}</h3>
+  <p>{description}</p>
+</div>
+
+<style>
+.tile {
+  padding: 2rem;
+  border: 4px solid black;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tile:hover {
+  transform: translate(-4px, -4px);
+  box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.8);
+}
+
+#tile-1 {
+  background-color: var(--tile1-bg);
+  color: var(--text-light);
+}
+
+#tile-2 {
+  background-color: var(--tile2-bg);
+  color: var(--text-light);
+}
+
+#tile-3 {
+  background-color: var(--tile3-bg);
+  color: var(--text-light);
+}
+
+#tile-4 {
+  background-color: var(--tile4-bg);
+  color: var(--text-light);
+  grid-column: 1 / -1;
+}
+
+#tile-5 {
+  background-color: var(--tile5-bg);
+  color: var(--text-light);
+  grid-column: 1 / -1;
+}
+</style>

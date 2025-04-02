@@ -1,16 +1,72 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
+import ServiceTile from '../components/ServiceTile.astro';
+import ContactForm from '../components/ContactForm.astro';
+import HeroSection from '../components/HeroSection.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Timothy Technologies | Software Consulting">
+	<div class="main-container">
+		<HeroSection />
+
+		<h2 class="section-title" id="services">Our Services</h2>
+		<div class="tile-grid">
+			<ServiceTile 
+				id="tile-1"
+				title="Custom Software"
+				description="Tailored solutions designed to meet your specific business needs."
+			/>
+			<ServiceTile 
+				id="tile-2"
+				title="Web Development"
+				description="Responsive and performant web applications built with modern technologies."
+			/>
+			<ServiceTile 
+				id="tile-3"
+				title="Mobile Apps"
+				description="Native and cross-platform mobile applications for iOS and Android."
+			/>
+		</div>
+
+		<h2 class="section-title" id="about">About Us</h2>
+		<div class="tile" id="tile-4">
+			<p>Timothy Technologies is a software consulting agency focused on delivering high-quality software solutions. We partner with businesses to solve complex problems with elegant code.</p>
+		</div>
+
+		<h2 class="section-title" id="contact">Get In Touch</h2>
+		<div class="tile" id="tile-5">
+			<ContactForm />
+		</div>
+	</div>
+</Layout>
+
+<style>
+.main-container {
+	max-width: 1400px;
+	margin: 2rem auto;
+	padding: 0 2rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2rem;
+}
+
+.section-title {
+	grid-column: 1 / -1;
+	margin-top: 1.5rem;
+	border-bottom: 4px solid black;
+	padding-bottom: 0.5rem;
+}
+
+.tile-grid {
+	grid-column: 1 / -1;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2rem;
+}
+
+@media (max-width: 768px) {
+	.main-container {
+		padding: 0 1rem;
+	}
+}
+</style>
