@@ -86,7 +86,7 @@ const { title } = Astro.props;
 				
 				// Node properties - adjust based on screen size
 				let isMobile = window.innerWidth < 768;
-				const particleCount = isMobile ? 50 : 150; // Fewer particles on mobile
+				const particleCount = isMobile ? 25 : 150; // Significantly fewer particles on mobile (50% reduction)
 				const connectionDistance = isMobile ? 300 : 250; // Much longer connections on mobile for more visibility
 				const particles = [];
 				
