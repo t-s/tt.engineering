@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import ServiceTile from '../components/ServiceTile.astro';
 import ContactForm from '../components/ContactForm.astro';
 import HeroSection from '../components/HeroSection.astro';
+import Modal from '../components/Modal.astro';
 ---
 
 <Layout title="Timothy Technologies | Software Consulting">
@@ -27,6 +28,115 @@ import HeroSection from '../components/HeroSection.astro';
 				description="Native and cross-platform mobile applications for iOS and Android."
 			/>
 		</div>
+		
+		<!-- Modals -->
+		<Modal id="tile-1" />
+		<Modal id="tile-2" />
+		<Modal id="tile-3" />
+		
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				// Get all tiles that trigger modals
+				const tiles = document.querySelectorAll('[data-modal-trigger]');
+				
+				// Add click event to each tile
+				tiles.forEach(tile => {
+					tile.addEventListener('click', function() {
+						const tileId = this.getAttribute('data-tile-id');
+						const modal = document.getElementById(`modal-${tileId}`);
+						
+						if (modal) {
+							// Clone the tile content for the modal
+							const title = this.querySelector('h3').textContent;
+							const description = this.querySelector('p').textContent;
+							
+							// Set modal content with additional details based on service type
+							const modalBody = modal.querySelector('.modal-body');
+							
+							let additionalContent = '';
+							if (tileId === 'tile-1') {
+								additionalContent = `
+									<div class="modal-details">
+										<h4>Our Custom Software Solutions</h4>
+										<ul>
+											<li>Enterprise Application Development</li>
+											<li>Legacy System Modernization</li>
+											<li>Database Design & Optimization</li>
+											<li>API Development & Integration</li>
+											<li>Workflow Automation</li>
+										</ul>
+									</div>
+								`;
+							} else if (tileId === 'tile-2') {
+								additionalContent = `
+									<div class="modal-details">
+										<h4>Our Web Development Expertise</h4>
+										<ul>
+											<li>Full-Stack Web Applications</li>
+											<li>E-commerce Platforms</li>
+											<li>Content Management Systems</li>
+											<li>Progressive Web Apps (PWAs)</li>
+											<li>Web Performance Optimization</li>
+										</ul>
+									</div>
+								`;
+							} else if (tileId === 'tile-3') {
+								additionalContent = `
+									<div class="modal-details">
+										<h4>Our Mobile App Capabilities</h4>
+										<ul>
+											<li>iOS & Android Native Apps</li>
+											<li>Cross-platform Development</li>
+											<li>Mobile UI/UX Design</li>
+											<li>App Store Optimization</li>
+											<li>Mobile Backend Development</li>
+										</ul>
+									</div>
+								`;
+							}
+							
+							modalBody.innerHTML = `
+								<h3>${title}</h3>
+								<p>${description}</p>
+								${additionalContent}
+							`;
+							
+							// Show the modal
+							modal.setAttribute('aria-hidden', 'false');
+							
+							// Lock body scroll
+							document.body.style.overflow = 'hidden';
+						}
+					});
+				});
+				
+				// Close modal when clicking overlay or close button
+				document.querySelectorAll('.modal').forEach(modal => {
+					const closeBtn = modal.querySelector('.modal-close');
+					const overlay = modal.querySelector('.modal-overlay');
+					
+					// Close with X button
+					closeBtn.addEventListener('click', () => {
+						modal.setAttribute('aria-hidden', 'true');
+						document.body.style.overflow = '';
+					});
+					
+					// Close by clicking overlay
+					overlay.addEventListener('click', () => {
+						modal.setAttribute('aria-hidden', 'true');
+						document.body.style.overflow = '';
+					});
+					
+					// Close with Escape key
+					document.addEventListener('keydown', e => {
+						if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+							modal.setAttribute('aria-hidden', 'true');
+							document.body.style.overflow = '';
+						}
+					});
+				});
+			});
+		</script>
 
 		<h2 class="section-title" id="about">About Us</h2>
 		<div class="about-section">

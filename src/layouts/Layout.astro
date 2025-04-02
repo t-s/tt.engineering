@@ -396,7 +396,7 @@ body {
     color: var(--text-dark);
     background-color: var(--background);
     line-height: 1.4;
-    padding-top: 95px; /* Adjusted for desktop */
+    padding-top: 130px; /* Increased padding for desktop */
     position: relative;
     overflow-x: hidden;
 }
@@ -486,7 +486,7 @@ nav a:hover:after {
 
 /* Scroll Anchor Offset */
 :target {
-    scroll-margin-top: 120px; /* Increased by 10px for desktop */
+    scroll-margin-top: 155px; /* Increased to match new top padding */
 }
 
 /* Typography */
@@ -606,11 +606,11 @@ footer {
 /* Responsive */
 @media (max-width: 768px) {
     body {
-        padding-top: 140px; /* Adjusted for mobile */
+        padding-top: 140px; /* Kept the same for mobile */
     }
     
     :target {
-        scroll-margin-top: 170px; /* Increased by 10px for mobile */
+        scroll-margin-top: 170px; /* Kept the same for mobile */
     }
     
     nav {

@@ -8,7 +8,7 @@ interface Props {
 const { id, title, description } = Astro.props;
 ---
 
-<div class="tile" id={id}>
+<div class="tile" id={id} data-tile-id={id} data-modal-trigger>
   <h3>{title}</h3>
   <p>{description}</p>
 </div>
@@ -23,6 +23,7 @@ const { id, title, description } = Astro.props;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  cursor: pointer;
 }
 
 .tile:hover {
